@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "framer-motion";
 
 export function TrialPackSection() {
@@ -34,16 +35,16 @@ export function TrialPackSection() {
             </Link>
           </motion.div>
 
-          {/* Right — Product packs */}
+          {/* Right — Product image */}
           <div className="relative flex items-center justify-center h-80 lg:h-96">
             {/* Glow */}
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
               <div className="h-56 w-56 rounded-full bg-pink-100 blur-3xl opacity-60" />
             </div>
 
-            {/* "Just ₹8" badge */}
+            {/* Pulsing ₹8 badge */}
             <motion.div
-              className="absolute left-6 top-4 z-20 flex h-16 w-16 items-center justify-center rounded-full bg-[#e91e63] shadow-xl shadow-pink-300/40"
+              className="absolute left-2 top-2 z-20 flex h-16 w-16 items-center justify-center rounded-full bg-[#e91e63] shadow-xl shadow-pink-300/40"
               animate={{ scale: [1, 1.08, 1] }}
               transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
             >
@@ -53,61 +54,29 @@ export function TrialPackSection() {
               </div>
             </motion.div>
 
-            {/* Small pack */}
+            {/* ₹85 badge */}
+            <div className="absolute right-2 top-2 z-20 bg-[#0d1f4a] text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg">
+              ₹85 / 1kg
+            </div>
+
             <motion.div
-              className="absolute left-8 bottom-6"
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.2 }}
             >
               <motion.div
-                animate={{ y: [0, -8, 0] }}
-                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-              >
-                <div className="h-40 w-28 rounded-xl bg-gradient-to-b from-[#e91e63] to-[#c2185b] shadow-2xl flex flex-col items-center justify-center p-3 border-2 border-pink-300/30">
-                  <span className="text-base font-extrabold text-white" style={{ fontFamily: "cursive" }}>
-                    Rinzoo
-                  </span>
-                  <p className="text-[8px] text-pink-100 uppercase tracking-wider">Trial Pack</p>
-                  <div className="mt-2 w-full rounded-lg bg-white py-1.5 text-center">
-                    <span className="text-2xl font-black text-[#e91e63]">₹8</span>
-                    <p className="text-[8px] text-gray-400">90g</p>
-                  </div>
-                </div>
-              </motion.div>
-            </motion.div>
-
-            {/* Large pack */}
-            <motion.div
-              className="absolute right-6 bottom-2"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.35 }}
-            >
-              <motion.div
-                animate={{ y: [0, -12, 0] }}
+                animate={{ y: [0, -10, 0] }}
                 transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
               >
-                {/* "Just ₹85" label */}
-                <div className="absolute -top-4 right-2 z-10 bg-[#0d1f4a] text-white text-[10px] font-bold px-2.5 py-1 rounded-full shadow">
-                  Just ₹85
-                </div>
-                <div className="h-60 w-40 rounded-2xl bg-gradient-to-b from-[#1e3a7a] to-[#0d1f4a] shadow-2xl flex flex-col items-center justify-center p-4 border-2 border-blue-400/20">
-                  <div className="w-full rounded-xl bg-[#e91e63] py-2 mb-3 text-center">
-                    <span className="text-xl font-extrabold text-white" style={{ fontFamily: "cursive" }}>
-                      Rinzoo
-                    </span>
-                    <p className="text-[8px] text-pink-100">KAPDO MANGA JO!</p>
-                  </div>
-                  <p className="text-[8px] text-blue-200 uppercase tracking-widest mb-2">
-                    Detergent Powder
-                  </p>
-                  <div className="w-full rounded-lg bg-white/10 py-2 text-center">
-                    <span className="text-3xl font-black text-white">₹85</span>
-                    <p className="text-[9px] text-blue-200">Net Weight: 1kg</p>
-                  </div>
+                <div className="rounded-2xl overflow-hidden shadow-2xl border border-gray-100">
+                  <Image
+                    src="/images/pack-compare.jpeg"
+                    alt="Rinzoo Trial Pack ₹8 and Family Pack ₹85"
+                    width={360}
+                    height={360}
+                    className="w-[240px] sm:w-[280px] lg:w-[320px] h-auto object-cover"
+                  />
                 </div>
               </motion.div>
             </motion.div>

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, MessageCircle } from "lucide-react";
@@ -38,16 +39,15 @@ export function Navbar() {
     >
       <nav className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Logo */}
-        <Link href="/" className="flex flex-col leading-none select-none">
-          <span
-            className="text-2xl font-extrabold tracking-tight"
-            style={{ color: "#e91e63", fontFamily: "cursive" }}
-          >
-            Rinzoo
-          </span>
-          <span className="text-[10px] text-gray-400 tracking-widest -mt-0.5">
-            KAPDO MANGA JO!
-          </span>
+        <Link href="/" className="flex items-center select-none">
+          <Image
+            src="/images/logo.png"
+            alt="Rinzoo"
+            width={130}
+            height={52}
+            className="h-12 w-auto object-contain"
+            priority
+          />
         </Link>
 
         {/* Desktop nav */}

@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
+import Image from "next/image";
 import { CheckCircle2 } from "lucide-react";
 
 const PRODUCTS = [
@@ -59,7 +60,20 @@ export default function ProductsPage() {
                 <p className="text-[#e91e63] font-semibold mt-1">{product.tagline}</p>
               </div>
 
-              <div className="p-8 grid grid-cols-1 md:grid-cols-2 gap-8 bg-gray-50">
+              <div className="p-8 grid grid-cols-1 md:grid-cols-3 gap-8 bg-gray-50">
+                {/* Product image */}
+                <div className="flex items-center justify-center">
+                  <div className="rounded-2xl overflow-hidden shadow-lg">
+                    <Image
+                      src="/images/image.png"
+                      alt="Rinzoo Detergent Powder 1kg Pack"
+                      width={220}
+                      height={280}
+                      className="w-[180px] h-auto object-cover"
+                    />
+                  </div>
+                </div>
+
                 {/* Features */}
                 <div>
                   <h3 className="font-bold text-gray-900 mb-4">Key Features</h3>

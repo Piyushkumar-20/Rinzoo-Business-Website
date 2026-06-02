@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { MessageCircle, Mail, Phone, MapPin } from "lucide-react";
 
 const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "919999999999";
@@ -11,15 +12,13 @@ export function Footer() {
           {/* Brand */}
           <div className="space-y-4">
             <div>
-              <span
-                className="text-2xl font-extrabold"
-                style={{ color: "#e91e63", fontFamily: "cursive" }}
-              >
-                Rinzoo
-              </span>
-              <p className="text-[10px] text-gray-400 tracking-widest mt-0.5">
-                KAPDO MANGA JO!
-              </p>
+              <Image
+                src="/images/logo.png"
+                alt="Rinzoo"
+                width={120}
+                height={48}
+                className="h-12 w-auto object-contain"
+              />
             </div>
             <p className="text-sm text-gray-300 leading-relaxed max-w-xs">
               Premium detergent powder by Ropox Industries. Powerful cleaning,
