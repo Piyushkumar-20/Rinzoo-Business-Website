@@ -1,13 +1,322 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
+}
+
+// ─── RBAC ────────────────────────────────────────────────────────────────────
+
+model User {
+  id           String    @id @default(cuid())
+  name         String
+  email        String    @unique
+  passwordHash String    @map("password_hash")
+  image        String?
+  roleId       String    @map("role_id")
+  isActive     Boolean   @default(true) @map("is_active")
+  lastLoginAt  DateTime? @map("last_login_at")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+
+  role               Role                @relation(fields: [roleId], references: [id])
+  assignedLeads      DistributorLead[]   @relation("LeadAssignee")
+  assignedContacts   ContactSubmission[] @relation("ContactAssignee")
+  createdOffers      Offer[]             @relation("OfferCreator")
+  auditLogs          AuditLog[]
+  pageSectionUpdates PageSection[]
+  mediaUploads       Media[]
+  settingUpdates     Setting[]
+
+  @@map("users")
+}
+
+model Role {
+  id          String           @id @default(cuid())
+  name        String           @unique
+  label       String
+  description String?
+  users       User[]
+  permissions RolePermission[]
+
+  @@map("roles")
+}
+
+model Permission {
+  id      String           @id @default(cuid())
+  action  String
+  subject String
+  label   String?
+  roles   RolePermission[]
+
+  @@unique([action, subject])
+  @@map("permissions")
+}
+
+model RolePermission {
+  roleId       String @map("role_id")
+  permissionId String @map("permission_id")
+
+  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+  @@map("role_permissions")
+}
+
+// ─── PRODUCTS ────────────────────────────────────────────────────────────────
+
+model Product {
+  id             String           @id @default(cuid())
+  name           String
+  slug           String           @unique
+  tagline        String?
+  description    String?
+  features       String[]
+  imageUrl       String?          @map("image_url")
+  isFeatured     Boolean          @default(false) @map("is_featured")
+  isActive       Boolean          @default(true) @map("is_active")
+  sortOrder      Int              @default(0) @map("sort_order")
+  seoTitle       String?          @map("seo_title")
+  seoDescription String?          @map("seo_description")
+  createdAt      DateTime         @default(now()) @map("created_at")
+  updatedAt      DateTime         @updatedAt @map("updated_at")
+
+  variants      ProductVariant[]
+  offerProducts OfferProduct[]
+
+  @@map("products")
+}
+
+model ProductVariant {
+  id        String   @id @default(cuid())
+  productId String   @map("product_id")
+  size      String
+  price     Decimal  @db.Decimal(10, 2)
+  mrp       Decimal  @db.Decimal(10, 2)
+  sku       String?  @unique
+  isTrial   Boolean  @default(false) @map("is_trial")
+  isActive  Boolean  @default(true) @map("is_active")
+  sortOrder Int      @default(0) @map("sort_order")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@map("product_variants")
+}
+
+// ─── OFFERS ──────────────────────────────────────────────────────────────────
+
+model Offer {
+  id          String    @id @default(cuid())
+  title       String
+  description String?
+  badgeText   String?   @map("badge_text")
+  imageUrl    String?   @map("image_url")
+  type        OfferType
+  discountPct Decimal?  @db.Decimal(5, 2) @map("discount_pct")
+  startsAt    DateTime  @map("starts_at")
+  expiresAt   DateTime? @map("expires_at")
+  isActive    Boolean   @default(true) @map("is_active")
+  priority    Int       @default(0)
+  createdById String    @map("created_by")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  createdBy User           @relation("OfferCreator", fields: [createdById], references: [id])
+  products  OfferProduct[]
+
+  @@map("offers")
+}
+
+enum OfferType {
+  TRIAL
+  SEASONAL
+  BULK
+  PROMO
+}
+
+model OfferProduct {
+  offerId   String @map("offer_id")
+  productId String @map("product_id")
+
+  offer   Offer   @relation(fields: [offerId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@id([offerId, productId])
+  @@map("offer_products")
+}
+
+// ─── LEADS ───────────────────────────────────────────────────────────────────
+
+model DistributorLead {
+  id                  String     @id @default(cuid())
+  name                String
+  businessName        String     @map("business_name")
+  email               String
+  phone               String
+  city                String
+  state               String
+  pincode             String
+  annualTurnoverRange String?    @map("annual_turnover_range")
+  currentBrands       String?    @map("current_brands")
+  message             String?
+  status              LeadStatus @default(PENDING)
+  assignedToId        String?    @map("assigned_to")
+  reviewNote          String?    @map("review_note")
+  reviewedAt          DateTime?  @map("reviewed_at")
+  source              LeadSource @default(WEB)
+  utmSource           String?    @map("utm_source")
+  utmMedium           String?    @map("utm_medium")
+  utmCampaign         String?    @map("utm_campaign")
+  createdAt           DateTime   @default(now()) @map("created_at")
+  updatedAt           DateTime   @updatedAt @map("updated_at")
+
+  assignedTo User? @relation("LeadAssignee", fields: [assignedToId], references: [id])
+
+  @@map("distributor_leads")
+}
+
+enum LeadStatus {
+  PENDING
+  REVIEWING
+  APPROVED
+  REJECTED
+}
+
+enum LeadSource {
+  WEB
+  WHATSAPP
+  REFERRAL
+  PHONE
+}
+
+// ─── CONTACTS ────────────────────────────────────────────────────────────────
+
+model ContactSubmission {
+  id           String        @id @default(cuid())
+  name         String
+  email        String
+  phone        String?
+  subject      String?
+  message      String
+  status       ContactStatus @default(UNREAD)
+  assignedToId String?       @map("assigned_to")
+  repliedAt    DateTime?     @map("replied_at")
+  createdAt    DateTime      @default(now()) @map("created_at")
+
+  assignedTo User? @relation("ContactAssignee", fields: [assignedToId], references: [id])
+
+  @@map("contact_submissions")
+}
+
+enum ContactStatus {
+  UNREAD
+  READ
+  REPLIED
+  ARCHIVED
+}
+
+// ─── CMS ─────────────────────────────────────────────────────────────────────
+
+model PageSection {
+  id          String   @id @default(cuid())
+  page        String
+  sectionKey  String   @map("section_key")
+  content     Json
+  isPublished Boolean  @default(true) @map("is_published")
+  updatedById String?  @map("updated_by")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  updatedBy User? @relation(fields: [updatedById], references: [id])
+
+  @@unique([page, sectionKey])
+  @@map("page_sections")
+}
+
+// ─── MEDIA ───────────────────────────────────────────────────────────────────
+
+model Media {
+  id                 String   @id @default(cuid())
+  filename           String
+  originalName       String   @map("original_name")
+  url                String
+  cloudinaryPublicId String?  @map("cloudinary_public_id")
+  mimeType           String   @map("mime_type")
+  sizeBytes          Int      @map("size_bytes")
+  width              Int?
+  height             Int?
+  altText            String?  @map("alt_text")
+  uploadedById       String?  @map("uploaded_by")
+  uploadedAt         DateTime @default(now()) @map("uploaded_at")
+
+  uploadedBy User? @relation(fields: [uploadedById], references: [id])
+
+  @@map("media")
+}
+
+// ─── SETTINGS ────────────────────────────────────────────────────────────────
+
+model Setting {
+  key         String      @id
+  value       String
+  type        SettingType @default(STRING)
+  label       String
+  group       String
+  updatedById String?     @map("updated_by")
+  updatedAt   DateTime    @updatedAt @map("updated_at")
+
+  updatedBy User? @relation(fields: [updatedById], references: [id])
+
+  @@map("settings")
+}
+
+enum SettingType {
+  STRING
+  JSON
+  BOOLEAN
+  NUMBER
+}
+
+// ─── AUDIT ───────────────────────────────────────────────────────────────────
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?  @map("user_id")
+  action    String
+  entity    String
+  entityId  String   @map("entity_id")
+  oldValue  Json?    @map("old_value")
+  newValue  Json?    @map("new_value")
+  ipAddress String?  @map("ip_address")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User? @relation(fields: [userId], references: [id])
+
+  @@index([entity, entityId])
+  @@index([userId])
+  @@map("audit_logs")
+}
+
+// ─── EMAIL NOTIFICATIONS ─────────────────────────────────────────────────────
+
+model EmailNotification {
+  id             String      @id @default(cuid())
+  recipientEmail String      @map("recipient_email")
+  template       String
+  payload        Json
+  resendId       String?     @map("resend_id")
+  status         EmailStatus @default(QUEUED)
+  sentAt         DateTime?   @map("sent_at")
+  createdAt      DateTime    @default(now()) @map("created_at")
+
+  @@map("email_notifications")
+}
+
+enum EmailStatus {
+  QUEUED
+  SENT
+  FAILED
+  BOUNCED
 }
