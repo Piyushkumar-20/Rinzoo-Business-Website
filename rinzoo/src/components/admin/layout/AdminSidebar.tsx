@@ -12,6 +12,7 @@ import {
   BarChart3,
   Settings,
   UserCog,
+  Globe,
 } from "lucide-react";
 
 const navItems = [
@@ -74,9 +75,16 @@ export function AdminSidebar() {
         </ul>
       </nav>
 
-      {/* Footer */}
-      <div className="border-t border-gray-200 p-4">
-        <p className="text-xs text-gray-400 text-center">Rinzoo v1.0</p>
+      {/* Footer — back to public site */}
+      <div className="border-t border-gray-200 p-4 space-y-2">
+        <Link
+          href="/"
+          className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-900 transition-colors"
+        >
+          <Globe className="h-4 w-4 text-gray-400" />
+          View Public Site
+        </Link>
+        <p className="text-xs text-gray-400 text-center">Rinzoo Admin v1.0</p>
       </div>
     </aside>
   );

@@ -1,8 +1,9 @@
+import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Users2, MessageSquare, Package, Tag } from "lucide-react";
+import { Users2, MessageSquare, Package, Tag, ArrowRight } from "lucide-react";
 
 export const metadata = { title: "Dashboard — Rinzoo Admin" };
 
@@ -99,8 +100,11 @@ export default async function DashboardPage() {
 
       {/* Recent Leads */}
       <Card>
-        <CardHeader>
+        <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-base">Recent Distributor Leads</CardTitle>
+          <Link href="/admin/leads" className="flex items-center gap-1 text-xs text-blue-600 hover:underline">
+            View all <ArrowRight className="h-3 w-3" />
+          </Link>
         </CardHeader>
         <CardContent>
           {recentLeads.length === 0 ? (
@@ -108,7 +112,7 @@ export default async function DashboardPage() {
           ) : (
             <div className="divide-y divide-gray-100">
               {recentLeads.map((lead) => (
-                <div key={lead.id} className="flex items-center justify-between py-3">
+                <Link key={lead.id} href={`/admin/leads/${lead.id}`} className="flex items-center justify-between py-3 hover:bg-gray-50 -mx-4 px-4 rounded-lg transition-colors">
                   <div>
                     <p className="text-sm font-medium text-gray-900">{lead.name}</p>
                     <p className="text-xs text-gray-500">
@@ -118,7 +122,7 @@ export default async function DashboardPage() {
                   <Badge variant={STATUS_COLORS[lead.status]}>
                     {lead.status}
                   </Badge>
-                </div>
+                </Link>
               ))}
             </div>
           )}

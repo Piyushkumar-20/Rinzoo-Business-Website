@@ -4,9 +4,11 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
+import { useSession, signOut } from "next-auth/react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, MessageCircle } from "lucide-react";
+import { Menu, X, MessageCircle, LayoutDashboard, LogOut, LogIn, UserPlus } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { UserMenu } from "./UserMenu";
 
 const NAV_LINKS = [
   { href: "/", label: "Home" },
@@ -18,11 +20,14 @@ const NAV_LINKS = [
 ];
 
 const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "919999999999";
+const ADMIN_ROLES = ["super_admin", "marketing_manager", "sales_manager", "content_manager"];
 
 export function Navbar() {
   const pathname = usePathname();
+  const { data: session } = useSession();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const isAdmin = ADMIN_ROLES.includes(session?.user?.role ?? "");
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
@@ -75,17 +80,22 @@ export function Navbar() {
           })}
         </ul>
 
-        {/* WhatsApp CTA + mobile toggle */}
-        <div className="flex items-center gap-3">
+        {/* Right side: WhatsApp + Auth + mobile toggle */}
+        <div className="flex items-center gap-2">
           <a
             href={`https://wa.me/${WHATSAPP_NUMBER}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="hidden sm:inline-flex items-center gap-2 rounded-full bg-[#25d366] px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+            className="hidden md:inline-flex items-center gap-2 rounded-full bg-[#25d366] px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90"
           >
             <MessageCircle className="h-4 w-4" />
-            WhatsApp Us
+            WhatsApp
           </a>
+
+          {/* Auth menu — desktop */}
+          <div className="hidden lg:block">
+            <UserMenu />
+          </div>
 
           <button
             className="lg:hidden rounded-md p-2 text-gray-600 hover:bg-gray-100 transition-colors"
@@ -124,7 +134,8 @@ export function Navbar() {
                   </Link>
                 </li>
               ))}
-              <li className="pt-2">
+              {/* Mobile WhatsApp */}
+              <li className="pt-2 border-t border-gray-100">
                 <a
                   href={`https://wa.me/${WHATSAPP_NUMBER}`}
                   target="_blank"
@@ -134,6 +145,53 @@ export function Navbar() {
                   <MessageCircle className="h-4 w-4" />
                   WhatsApp Us
                 </a>
+              </li>
+
+              {/* Mobile auth section */}
+              <li className="pt-2 border-t border-gray-100">
+                {session ? (
+                  <div className="space-y-1">
+                    <p className="px-3 py-1 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                      {session.user.name}
+                    </p>
+                    {isAdmin && (
+                      <Link
+                        href="/admin/dashboard"
+                        onClick={() => setMobileOpen(false)}
+                        className="flex items-center gap-2 rounded-md px-3 py-2.5 text-sm font-medium text-blue-700 bg-blue-50"
+                      >
+                        <LayoutDashboard className="h-4 w-4" />
+                        Admin Dashboard
+                      </Link>
+                    )}
+                    <button
+                      onClick={() => { setMobileOpen(false); signOut({ callbackUrl: "/" }); }}
+                      className="flex w-full items-center gap-2 rounded-md px-3 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50"
+                    >
+                      <LogOut className="h-4 w-4" />
+                      Sign out
+                    </button>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <Link
+                      href="/auth/signin"
+                      onClick={() => setMobileOpen(false)}
+                      className="flex items-center gap-2 rounded-md px-3 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                    >
+                      <LogIn className="h-4 w-4" />
+                      Login
+                    </Link>
+                    <Link
+                      href="/auth/signup"
+                      onClick={() => setMobileOpen(false)}
+                      className="flex items-center gap-2 rounded-full bg-[#e91e63] px-4 py-2.5 text-sm font-semibold text-white"
+                    >
+                      <UserPlus className="h-4 w-4" />
+                      Sign Up Free
+                    </Link>
+                  </div>
+                )}
               </li>
             </ul>
           </motion.div>
