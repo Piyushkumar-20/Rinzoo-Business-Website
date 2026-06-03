@@ -6,7 +6,20 @@ import { rateLimit, getClientIp } from "@/lib/rate-limit";
 
 const schema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
-  email: z.string().email("Enter a valid email address"),
+  email: z
+    .string()
+    .email("Enter a valid email address")
+    .toLowerCase()
+    .refine(
+      (e) => {
+        const [local, domain] = e.split("@");
+        if (!local || local.length < 2) return false;
+        const parts = (domain ?? "").split(".");
+        if (parts.length < 2) return false;
+        return parts[parts.length - 1].length >= 2;
+      },
+      { message: "Enter a real, deliverable email address" }
+    ),
   password: z.string().min(8, "Password must be at least 8 characters"),
 });
 
@@ -25,7 +38,6 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { name, email, password } = schema.parse(body);
 
-    // Check for existing account
     const existing = await db.user.findUnique({ where: { email } });
     if (existing) {
       return NextResponse.json(
@@ -34,7 +46,6 @@ export async function POST(request: Request) {
       );
     }
 
-    // Ensure the "user" role exists
     const userRole = await db.role.upsert({
       where: { name: "user" },
       update: {},
@@ -43,16 +54,17 @@ export async function POST(request: Request) {
 
     const passwordHash = await bcrypt.hash(password, 12);
 
-    const user = await db.user.create({
+    await db.user.create({
       data: {
         name,
         email,
         passwordHash,
         roleId: userRole.id,
+        emailVerifiedAt: new Date(), // auto-verified until domain email is set up
       },
     });
 
-    return NextResponse.json({ data: { id: user.id } }, { status: 201 });
+    return NextResponse.json({ data: { message: "Account created successfully." } }, { status: 201 });
   } catch (err) {
     if (err instanceof z.ZodError) {
       return NextResponse.json(

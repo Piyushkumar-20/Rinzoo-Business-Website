@@ -3,7 +3,7 @@ import Image from "next/image";
 
 export default function GlobalNotFound() {
   return (
-    <div className="min-h-screen bg-[#0d1f4a] flex flex-col items-center justify-center px-4 text-center">
+    <div className="min-h-screen bg-neutral-950 flex flex-col items-center justify-center px-4 text-center">
       {/* Decorative bubbles */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-32 -right-32 h-96 w-96 rounded-full bg-white/5" />
@@ -19,7 +19,7 @@ export default function GlobalNotFound() {
           className="h-14 w-auto object-contain mx-auto mb-10"
         />
 
-        <p className="text-8xl font-black text-[#e91e63] leading-none mb-4">404</p>
+        <p className="text-8xl font-black bg-gradient-to-r from-[#5ea3ff] to-[oklch(0.78_0.12_240)] bg-clip-text text-transparent leading-none mb-4">404</p>
         <h1 className="text-2xl font-extrabold text-white mb-3">
           This page got lost in the laundry.
         </h1>
@@ -30,7 +30,7 @@ export default function GlobalNotFound() {
         <div className="flex flex-wrap gap-3 justify-center">
           <Link
             href="/"
-            className="rounded-full bg-[#e91e63] px-6 py-3 text-sm font-bold text-white hover:bg-[#c2185b] transition-colors"
+            className="rounded-full bg-[#2b7fff] px-6 py-3 text-sm font-bold text-white hover:bg-[#2b7fff]/90 transition-colors"
           >
             Go Home
           </Link>

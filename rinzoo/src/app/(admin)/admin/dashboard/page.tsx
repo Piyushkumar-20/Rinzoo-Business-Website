@@ -8,15 +8,18 @@ import { Users2, MessageSquare, Package, Tag, ArrowRight } from "lucide-react";
 export const metadata = { title: "Dashboard — Rinzoo Admin" };
 
 async function getStats() {
-  const [totalLeads, pendingLeads, totalContacts, unreadContacts, totalProducts, activeOffers] =
-    await Promise.all([
-      db.distributorLead.count(),
-      db.distributorLead.count({ where: { status: "PENDING" } }),
-      db.contactSubmission.count(),
-      db.contactSubmission.count({ where: { status: "UNREAD" } }),
-      db.product.count({ where: { isActive: true } }),
-      db.offer.count({ where: { isActive: true } }),
-    ]);
+  // 4 queries instead of 6 — groupBy collapses status counts into single round-trips
+  const [leadGroups, contactGroups, totalProducts, activeOffers] = await Promise.all([
+    db.distributorLead.groupBy({ by: ["status"], _count: { _all: true } }),
+    db.contactSubmission.groupBy({ by: ["status"], _count: { _all: true } }),
+    db.product.count({ where: { isActive: true } }),
+    db.offer.count({ where: { isActive: true } }),
+  ]);
+
+  const totalLeads    = leadGroups.reduce((s, g) => s + g._count._all, 0);
+  const pendingLeads  = leadGroups.find((g) => g.status === "PENDING")?._count._all ?? 0;
+  const totalContacts = contactGroups.reduce((s, g) => s + g._count._all, 0);
+  const unreadContacts = contactGroups.find((g) => g.status === "UNREAD")?._count._all ?? 0;
 
   return { totalLeads, pendingLeads, totalContacts, unreadContacts, totalProducts, activeOffers };
 }

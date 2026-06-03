@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { SettingsForm } from "@/components/admin/settings/SettingsForm";
-import { SETTINGS_SCHEMA } from "@/app/api/v1/admin/settings/route";
+import { SETTINGS_SCHEMA } from "@/lib/settings-schema";
 
 export const metadata = { title: "Settings — Rinzoo Admin" };
 

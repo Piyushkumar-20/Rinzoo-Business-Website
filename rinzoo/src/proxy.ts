@@ -3,7 +3,8 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 // Public POST endpoints that don't require authentication
-const PUBLIC_API_POSTS = ["/api/v1/leads", "/api/v1/contacts", "/api/v1/auth/signup"];
+const PUBLIC_API_POSTS = ["/api/v1/leads", "/api/v1/contacts", "/api/v1/auth/signup", "/api/v1/auth/resend-verification"];
+const PUBLIC_API_GETS  = ["/api/v1/auth/verify-email", "/api/v1/auth/check-verification"];
 
 // Roles that have admin access (everything except regular "user" accounts)
 const ADMIN_ROLES = ["super_admin", "marketing_manager", "sales_manager", "content_manager"];
@@ -18,7 +19,9 @@ export async function proxy(request: NextRequest) {
   // ── Public form/auth API endpoints — no auth required ────────────────────
   const isPublicPost =
     PUBLIC_API_POSTS.some((p) => pathname === p) && request.method === "POST";
-  if (isPublicPost) return NextResponse.next();
+  const isPublicGet =
+    PUBLIC_API_GETS.some((p) => pathname === p) && request.method === "GET";
+  if (isPublicPost || isPublicGet) return NextResponse.next();
 
   // ── Get JWT token (edge-safe, no DB call) ────────────────────────────────
   const token = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET! });

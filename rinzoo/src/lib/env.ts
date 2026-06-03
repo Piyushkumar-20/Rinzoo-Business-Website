@@ -13,6 +13,8 @@ const REQUIRED_ENV_VARS = [
 const OPTIONAL_ENV_VARS = [
   "DIRECT_URL",
   "NEXT_PUBLIC_WHATSAPP_NUMBER",
+  "RESEND_API_KEY",
+  "RESEND_FROM_EMAIL",
 ] as const;
 
 function validateEnv() {
@@ -53,7 +55,7 @@ export const env = {
   DIRECT_URL: process.env.DIRECT_URL,
   NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET!,
   NEXTAUTH_URL: process.env.NEXTAUTH_URL!,
-  WHATSAPP_NUMBER: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "919999999999",
+  WHATSAPP_NUMBER: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "919911982666",
   NODE_ENV: process.env.NODE_ENV as "development" | "production" | "test",
   isDev: process.env.NODE_ENV === "development",
   isProd: process.env.NODE_ENV === "production",
