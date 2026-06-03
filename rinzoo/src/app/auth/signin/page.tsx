@@ -1,7 +1,8 @@
 "use client";
 
 import { Suspense, useState } from "react";
-import { signIn, getSession } from "next-auth/react";
+import { signIn } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -27,6 +28,7 @@ const inputClass =
 function SignInContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { data: session, update: updateSession } = useSession();
   const callbackUrl = searchParams.get("callbackUrl") ?? "";
   const justVerified = searchParams.get("verified") === "true";
   const [error, setError] = useState<string | null>(null);
@@ -50,14 +52,32 @@ function SignInContent() {
       return;
     }
 
-    const session = await getSession();
-    const role = session?.user?.role ?? "user";
-    if (ADMIN_ROLES.includes(role)) {
-      router.push(callbackUrl.startsWith("/admin") ? callbackUrl : "/admin/dashboard");
-    } else {
-      router.push(callbackUrl && !callbackUrl.startsWith("/admin") ? callbackUrl : "/");
+    if (!result?.ok) {
+      setError("Authentication failed. Please try again.");
+      return;
     }
-    router.refresh();
+
+    // Update the session context to reflect the newly signed-in user
+    // This ensures session.user.role is immediately available
+    const updatedSession = await updateSession();
+
+    if (!updatedSession) {
+      setError("Failed to initialize session. Please try again.");
+      return;
+    }
+
+    // Determine redirect URL based on user role from updated session
+    const userRole = updatedSession.user?.role ?? "user";
+    let redirectUrl = "/";
+
+    if (ADMIN_ROLES.includes(userRole)) {
+      redirectUrl = callbackUrl?.startsWith("/admin") ? callbackUrl : "/admin/dashboard";
+    } else {
+      redirectUrl = callbackUrl && !callbackUrl.startsWith("/admin") ? callbackUrl : "/";
+    }
+
+    // Redirect to the determined URL
+    router.push(redirectUrl);
   };
 
   return (

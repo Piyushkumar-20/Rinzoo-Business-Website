@@ -9,11 +9,19 @@ interface AdminLayoutProps {
   children: React.ReactNode;
 }
 
+const ADMIN_ROLES = ["super_admin", "marketing_manager", "sales_manager", "content_manager"];
+
 export default async function AdminLayout({ children }: AdminLayoutProps) {
   const session = await auth();
 
+  // Check if user is authenticated
   if (!session?.user) {
     redirect("/auth/signin");
+  }
+
+  // Check if user has admin role
+  if (!ADMIN_ROLES.includes(session.user.role)) {
+    redirect("/");
   }
 
   return (
