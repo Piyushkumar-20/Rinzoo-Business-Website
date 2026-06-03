@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { db } from "@/lib/db";
+import { rateLimit, getClientIp } from "@/lib/rate-limit";
 
 const schema = z.object({
   name: z.string().min(2),
@@ -16,17 +17,20 @@ const schema = z.object({
 });
 
 export async function POST(request: Request) {
+  // Rate limit: 2 submissions per IP per 30 minutes (distributor leads)
+  const ip = getClientIp(request);
+  const limit = rateLimit(`lead:${ip}`, 2, 30 * 60 * 1000);
+  if (!limit.success) {
+    return NextResponse.json(
+      { error: { code: "RATE_LIMITED", message: `Too many submissions. Please try again in ${limit.retryAfterSeconds}s.` } },
+      { status: 429, headers: { "Retry-After": String(limit.retryAfterSeconds) } }
+    );
+  }
+
   try {
     const body = await request.json();
     const data = schema.parse(body);
-
-    const lead = await db.distributorLead.create({
-      data: {
-        ...data,
-        source: "WEB",
-      },
-    });
-
+    const lead = await db.distributorLead.create({ data: { ...data, source: "WEB" } });
     return NextResponse.json({ data: { id: lead.id, status: lead.status } }, { status: 201 });
   } catch (err) {
     if (err instanceof z.ZodError) {
