@@ -24,7 +24,18 @@ export async function proxy(request: NextRequest) {
   if (isPublicPost || isPublicGet) return NextResponse.next();
 
   // ── Get JWT token (edge-safe, no DB call) ────────────────────────────────
-  const token = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET! });
+  // Auth.js v5 writes the session cookie as `__Secure-authjs.session-token` on
+  // HTTPS (Vercel) and `authjs.session-token` on http (local dev). The JWT is
+  // salted with that exact cookie name. getToken() defaults `secureCookie` to
+  // false, so without this it looks for the wrong cookie/salt in production and
+  // returns null — silently bouncing every admin to the sign-in page on Vercel.
+  // Detect the actual cookie present so cookieName + salt always match.
+  const useSecureCookie = request.cookies.has("__Secure-authjs.session-token");
+  const token = await getToken({
+    req: request,
+    secret: process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET,
+    secureCookie: useSecureCookie,
+  });
 
   // ── Admin UI routes (/admin/*) ────────────────────────────────────────────
   if (pathname.startsWith("/admin")) {

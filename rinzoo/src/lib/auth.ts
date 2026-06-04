@@ -10,6 +10,12 @@ const loginSchema = z.object({
 });
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
+  // Explicit so the JWT is signed/decoded with the same secret everywhere
+  // (auth() in Node, getToken() in the edge proxy). Matches Auth.js's own
+  // resolution order: AUTH_SECRET first, then NEXTAUTH_SECRET.
+  secret: process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET,
+  // Trust the deployment host (required by Auth.js v5 behind Vercel's proxy).
+  trustHost: true,
   session: { strategy: "jwt" },
   pages: {
     signIn: "/auth/signin",
