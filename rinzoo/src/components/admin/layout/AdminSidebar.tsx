@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { cn } from "@/lib/utils";
 import {
   LayoutDashboard,
@@ -13,21 +14,33 @@ import {
   Settings,
   UserCog,
   Globe,
+  Image as ImageIcon,
+  FileText,
 } from "lucide-react";
 
+// Role-gated navigation. `roles` lists which roles may see the item.
+// super_admin always sees everything.
 const navItems = [
-  { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/admin/products", label: "Products", icon: Package },
-  { href: "/admin/offers", label: "Offers", icon: Tag },
-  { href: "/admin/leads", label: "Leads", icon: Users2 },
-  { href: "/admin/contacts", label: "Contacts", icon: MessageSquare },
-  { href: "/admin/analytics", label: "Analytics", icon: BarChart3 },
-  { href: "/admin/users", label: "Users", icon: UserCog },
-  { href: "/admin/settings", label: "Settings", icon: Settings },
+  { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard, roles: ["super_admin", "marketing_manager", "content_manager", "sales_manager"] },
+  { href: "/admin/content", label: "Content Manager", icon: FileText, roles: ["super_admin", "marketing_manager", "content_manager"] },
+  { href: "/admin/products", label: "Products", icon: Package, roles: ["super_admin", "marketing_manager", "content_manager"] },
+  { href: "/admin/offers", label: "Offers", icon: Tag, roles: ["super_admin", "marketing_manager", "content_manager"] },
+  { href: "/admin/media", label: "Media Library", icon: ImageIcon, roles: ["super_admin", "marketing_manager", "content_manager"] },
+  { href: "/admin/leads", label: "Leads", icon: Users2, roles: ["super_admin", "sales_manager"] },
+  { href: "/admin/contacts", label: "Contacts", icon: MessageSquare, roles: ["super_admin", "sales_manager"] },
+  { href: "/admin/analytics", label: "Analytics", icon: BarChart3, roles: ["super_admin", "marketing_manager", "sales_manager"] },
+  { href: "/admin/users", label: "Users", icon: UserCog, roles: ["super_admin"] },
+  { href: "/admin/settings", label: "Settings", icon: Settings, roles: ["super_admin"] },
 ];
 
 export function AdminSidebar() {
   const pathname = usePathname();
+  const { data: session } = useSession();
+  const role = session?.user?.role ?? "";
+
+  const visibleItems = navItems.filter(
+    (item) => role === "super_admin" || item.roles.includes(role)
+  );
 
   return (
     <aside className="fixed inset-y-0 left-0 z-40 flex w-64 flex-col border-r border-gray-200 bg-white">
@@ -47,7 +60,7 @@ export function AdminSidebar() {
       {/* Navigation */}
       <nav className="flex-1 overflow-y-auto px-3 py-4">
         <ul className="space-y-1">
-          {navItems.map((item) => {
+          {visibleItems.map((item) => {
             const Icon = item.icon;
             const isActive =
               pathname === item.href ||
@@ -64,9 +77,7 @@ export function AdminSidebar() {
                       : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
                   )}
                 >
-                  <Icon
-                    className={cn("h-4 w-4 shrink-0", isActive ? "text-blue-600" : "text-gray-400")}
-                  />
+                  <Icon className={cn("h-4 w-4 shrink-0", isActive ? "text-blue-600" : "text-gray-400")} />
                   {item.label}
                 </Link>
               </li>

@@ -1,5 +1,6 @@
 import { cache } from "react";
 import { db } from "@/lib/db";
+import { getSiteContent, isVisible } from "@/lib/content";
 import { Hero } from "@/components/landing/Hero";
 import { Features } from "@/components/landing/Features";
 import { Challenge } from "@/components/landing/Challenge";
@@ -93,17 +94,21 @@ const getProductPacks = cache(async (): Promise<Pack[]> => {
 });
 
 export default async function HomePage() {
-  const [offers, packs] = await Promise.all([getActiveOffers(), getProductPacks()]);
+  const [offers, packs, content] = await Promise.all([
+    getActiveOffers(),
+    getProductPacks(),
+    getSiteContent(),
+  ]);
 
   return (
     <main className="max-w-[1140px] mx-auto">
-      <Hero />
-      <Features />
-      <Challenge />
-      <ProductShowcase packs={packs} />
-      <WhyDifferent />
-      <About />
-      <Offers offers={offers} />
+      {isVisible(content, "hero") && <Hero content={content.hero} />}
+      {isVisible(content, "features") && <Features />}
+      {isVisible(content, "challenge") && <Challenge />}
+      {isVisible(content, "productShowcase") && <ProductShowcase packs={packs} />}
+      {isVisible(content, "whyDifferent") && <WhyDifferent />}
+      {isVisible(content, "about") && <About />}
+      {isVisible(content, "offers") && <Offers offers={offers} />}
     </main>
   );
 }

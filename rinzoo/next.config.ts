@@ -53,9 +53,10 @@ const nextConfig: NextConfig = {
     deviceSizes: [640, 750, 828, 1080, 1200, 1920],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
     minimumCacheTTL: 86400, // 24 h
-    // Approved landing-page lifestyle photos are hosted on Unsplash
+    // Approved landing-page lifestyle photos (Unsplash) + admin-uploaded media (Cloudinary)
     remotePatterns: [
       { protocol: "https", hostname: "images.unsplash.com" },
+      { protocol: "https", hostname: "res.cloudinary.com" },
     ],
   },
 

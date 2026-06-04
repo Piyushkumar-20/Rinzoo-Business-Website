@@ -3,8 +3,21 @@ import Image from "next/image";
 import { Sparkles, ShoppingBag, Handshake, ShieldCheck, Users, IndianRupee, Star } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import type { SectionContent } from "@/lib/content-schema";
 
-export function Hero() {
+export function Hero({ content }: { content?: SectionContent }) {
+  // DB content with safe fallback to the approved defaults
+  const c = (content ?? {}) as Record<string, string>;
+  const badge = c.badge || "Premium Results, Smart Pricing";
+  const heading = c.heading || "Premium Results.";
+  const highlight = c.highlight || "Smart Pricing.";
+  const description = c.description || "Powerful stain removal, long-lasting freshness, and reliable cleaning performance for every household.";
+  const primaryBtnText = c.primaryBtnText || "Try Rinzoo Today";
+  const primaryBtnLink = c.primaryBtnLink || "/products";
+  const secondaryBtnText = c.secondaryBtnText || "Become a Distributor";
+  const secondaryBtnLink = c.secondaryBtnLink || "/distributor";
+  const imageUrl = c.imageUrl || "/images/pack-compare.jpeg";
+
   return (
     <section className="relative px-5 sm:px-8 pt-12 sm:pt-16 pb-16 sm:pb-20 overflow-hidden">
       <div className="pointer-events-none size-96 blur-3xl rounded-full bg-[#2b7fff]/15 absolute -right-24 top-10" />
@@ -15,29 +28,29 @@ export function Hero() {
         <div className="flex flex-col gap-6">
           <Badge className="font-semibold rounded-full bg-neutral-800 text-[#5ea3ff] text-xs leading-4 px-3 py-1 gap-1.5 w-fit">
             <Sparkles className="size-3.5" />
-            Premium Results, Smart Pricing
+            {badge}
           </Badge>
           <h1 className="font-extrabold text-neutral-50 text-4xl sm:text-5xl lg:text-6xl leading-[1.05] tracking-tight">
-            Premium Results.
+            {heading}
             <br />
             <span className="bg-gradient-to-r from-[#5ea3ff] to-[oklch(0.78_0.12_240)] bg-clip-text text-transparent">
-              Smart Pricing.
+              {highlight}
             </span>
           </h1>
           <p className="max-w-md text-[#a1a1a1] text-base leading-7">
-            Powerful stain removal, long-lasting freshness, and reliable cleaning performance for every household.
+            {description}
           </p>
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
             <Button asChild className="bg-[oklch(0.62_0.19_47)] hover:bg-[oklch(0.58_0.19_47)] shadow-lg shadow-[oklch(0.62_0.19_47)]/30 font-semibold text-white text-base leading-6 px-6 gap-2 h-12">
-              <Link href="/products">
+              <Link href={primaryBtnLink}>
                 <ShoppingBag className="size-5" />
-                Try Rinzoo Today
+                {primaryBtnText}
               </Link>
             </Button>
             <Button asChild className="bg-transparent font-semibold text-[#5ea3ff] border-[#2b7fff] border-2 hover:bg-[#2b7fff]/10 px-6 gap-2 h-12" variant="outline">
-              <Link href="/distributor">
+              <Link href={secondaryBtnLink}>
                 <Handshake className="size-5" />
-                Become a Distributor
+                {secondaryBtnText}
               </Link>
             </Button>
           </div>
@@ -68,7 +81,7 @@ export function Hero() {
               <div key={p.label} className={`shadow-2xl shadow-black/40 rounded-3xl bg-neutral-900 border border-white/10 overflow-hidden ${p.mt}`}>
                 <div className="relative w-36 sm:w-44 h-56 sm:h-64">
                   <Image
-                    src="/images/pack-compare.jpeg"
+                    src={imageUrl}
                     alt={`Rinzoo ${p.label} pack`}
                     fill
                     sizes="(max-width: 640px) 144px, 176px"
