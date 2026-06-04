@@ -13,7 +13,15 @@ const QUICK_LINKS = [
   { href: "/contact", label: "Contact" },
 ];
 
-export function LandingFooter() {
+interface FooterProps {
+  logoUrl?: string;
+  blurb?: string;
+  tagline?: string;
+}
+
+export function LandingFooter({ logoUrl = "/images/logo.png", blurb, tagline }: FooterProps) {
+  const brandBlurb = blurb || "Premium detergent powder by Ropox Industries. Powerful cleaning, fabric-friendly freshness — at a price every household can trust.";
+  const bottomTagline = tagline || "Rinzoo — Premium Results, Smart Pricing";
   return (
     <footer className="border-t border-white/10 bg-neutral-950">
       <div className="max-w-[1140px] mx-auto px-5 sm:px-8 py-14">
@@ -22,7 +30,7 @@ export function LandingFooter() {
           <div className="space-y-4">
             <div className="flex items-center gap-2">
               <div className="size-10 rounded-xl bg-[#2b7fff] flex justify-center items-center overflow-hidden">
-                <Image src="/images/logo.png" alt="Rinzoo logo" width={40} height={40} className="object-cover w-full h-full" />
+                <Image src={logoUrl} alt="Rinzoo logo" width={40} height={40} className="object-cover w-full h-full" />
               </div>
               <div className="leading-none flex flex-col">
                 <span className="font-extrabold text-[#5ea3ff] text-xl leading-7 tracking-tight">Rinzoo</span>
@@ -30,8 +38,7 @@ export function LandingFooter() {
               </div>
             </div>
             <p className="text-sm text-[#a1a1a1] leading-relaxed max-w-xs">
-              Premium detergent powder by Ropox Industries. Powerful cleaning, fabric-friendly freshness — at a
-              price every household can trust.
+              {brandBlurb}
             </p>
           </div>
 
@@ -104,7 +111,7 @@ export function LandingFooter() {
       <div className="border-t border-white/10">
         <div className="max-w-[1140px] mx-auto px-5 sm:px-8 py-5 flex flex-col sm:flex-row items-center justify-between gap-2">
           <p className="text-xs text-[#a1a1a1]">© {new Date().getFullYear()} Ropox Industries. All rights reserved.</p>
-          <p className="text-xs text-[#a1a1a1]">Rinzoo — Premium Results, Smart Pricing</p>
+          <p className="text-xs text-[#a1a1a1]">{bottomTagline}</p>
         </div>
       </div>
     </footer>

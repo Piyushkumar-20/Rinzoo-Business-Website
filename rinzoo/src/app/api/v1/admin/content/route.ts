@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth";
@@ -66,6 +67,10 @@ export async function PUT(request: Request) {
       update: { content: allowed, isPublished, updatedById: session.user.id },
       create: { page: "home", sectionKey, content: allowed, isPublished, updatedById: session.user.id },
     });
+
+    // Bust the ISR full-route cache so the change appears immediately on the
+    // public site (homepage + all pages sharing the marketing layout/logo).
+    revalidatePath("/", "layout");
 
     return NextResponse.json({ data: { sectionKey: saved.sectionKey, values: allowed } });
   } catch (err) {

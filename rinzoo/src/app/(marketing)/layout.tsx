@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getSiteContent } from "@/lib/content";
 import { LandingHeader } from "@/components/landing/LandingHeader";
 import { LandingFooter } from "@/components/landing/LandingFooter";
 
@@ -27,12 +28,16 @@ export const metadata: Metadata = {
   },
 };
 
-export default function MarketingLayout({ children }: { children: React.ReactNode }) {
+export default async function MarketingLayout({ children }: { children: React.ReactNode }) {
+  const content = await getSiteContent();
+  const logoUrl = (content.branding?.logoUrl as string) || "/images/logo.png";
+  const footer = (content.footer ?? {}) as Record<string, string>;
+
   return (
     <div className="min-h-screen bg-neutral-950 text-neutral-50 flex flex-col">
-      <LandingHeader />
+      <LandingHeader logoUrl={logoUrl} />
       <div className="flex-1">{children}</div>
-      <LandingFooter />
+      <LandingFooter logoUrl={logoUrl} blurb={footer.blurb} tagline={footer.tagline} />
     </div>
   );
 }

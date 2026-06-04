@@ -1,6 +1,7 @@
 import { Sparkles, Flower2, Shirt, IndianRupee } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import type { SectionContent } from "@/lib/content-schema";
 
 const FEATURES = [
   {
@@ -29,18 +30,22 @@ const FEATURES = [
   },
 ];
 
-export function Features() {
+export function Features({ content }: { content?: SectionContent }) {
+  const c = (content ?? {}) as Record<string, string>;
+  const badge = c.badge || "Why Families Choose Rinzoo";
+  const heading = c.heading || "Premium Performance, Every Wash";
+  const description = c.description || "Engineered for Indian households that want the best clean without overspending.";
   return (
     <section className="px-5 sm:px-8 py-16 sm:py-20">
       <div className="text-center flex mb-12 flex-col items-center gap-3">
         <Badge className="font-semibold rounded-full bg-neutral-800 text-[#5ea3ff] text-xs leading-4 px-3 py-1">
-          Why Families Choose Rinzoo
+          {badge}
         </Badge>
         <h2 className="font-extrabold text-neutral-50 text-3xl sm:text-4xl leading-tight tracking-tight">
-          Premium Performance, Every Wash
+          {heading}
         </h2>
         <p className="max-w-xl text-[#a1a1a1] text-base leading-7">
-          Engineered for Indian households that want the best clean without overspending.
+          {description}
         </p>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">

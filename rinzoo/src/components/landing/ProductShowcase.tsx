@@ -4,6 +4,7 @@ import { Check, ShoppingCart } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardFooter } from "@/components/ui/card";
+import type { SectionContent } from "@/lib/content-schema";
 
 export interface Pack {
   badgeText: string;
@@ -15,15 +16,18 @@ export interface Pack {
   highlight: boolean;
 }
 
-export function ProductShowcase({ packs }: { packs: Pack[] }) {
+export function ProductShowcase({ packs, content }: { packs: Pack[]; content?: SectionContent }) {
+  const c = (content ?? {}) as Record<string, string>;
+  const badge = c.badge || "Product Showcase";
+  const heading = c.heading || "Choose Your Rinzoo Pack";
   return (
     <section className="px-5 sm:px-8 py-16 sm:py-20">
       <div className="text-center flex mb-12 flex-col items-center gap-3">
         <Badge className="font-semibold rounded-full bg-neutral-800 text-[#5ea3ff] text-xs leading-4 px-3 py-1">
-          Product Showcase
+          {badge}
         </Badge>
         <h2 className="font-extrabold text-neutral-50 text-3xl sm:text-4xl leading-tight tracking-tight">
-          Choose Your Rinzoo Pack
+          {heading}
         </h2>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">

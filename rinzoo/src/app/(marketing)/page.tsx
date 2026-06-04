@@ -94,21 +94,28 @@ const getProductPacks = cache(async (): Promise<Pack[]> => {
 });
 
 export default async function HomePage() {
-  const [offers, packs, content] = await Promise.all([
+  const [offers, basePacks, content] = await Promise.all([
     getActiveOffers(),
     getProductPacks(),
     getSiteContent(),
   ]);
 
+  // Showcase pack images are editable via Content Manager (override DB/product images)
+  const showcase = content.productShowcase as Record<string, string>;
+  const packs = basePacks.map((p, i) => ({
+    ...p,
+    image: (i === 0 ? showcase?.image1 : showcase?.image2) || p.image,
+  }));
+
   return (
     <main className="max-w-[1140px] mx-auto">
       {isVisible(content, "hero") && <Hero content={content.hero} />}
-      {isVisible(content, "features") && <Features />}
-      {isVisible(content, "challenge") && <Challenge />}
-      {isVisible(content, "productShowcase") && <ProductShowcase packs={packs} />}
-      {isVisible(content, "whyDifferent") && <WhyDifferent />}
-      {isVisible(content, "about") && <About />}
-      {isVisible(content, "offers") && <Offers offers={offers} />}
+      {isVisible(content, "features") && <Features content={content.features} />}
+      {isVisible(content, "challenge") && <Challenge content={content.challenge} />}
+      {isVisible(content, "productShowcase") && <ProductShowcase packs={packs} content={content.productShowcase} />}
+      {isVisible(content, "whyDifferent") && <WhyDifferent content={content.whyDifferent} />}
+      {isVisible(content, "about") && <About content={content.about} />}
+      {isVisible(content, "offers") && <Offers offers={offers} content={content.offers} />}
     </main>
   );
 }

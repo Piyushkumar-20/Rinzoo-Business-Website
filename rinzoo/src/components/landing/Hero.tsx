@@ -16,10 +16,16 @@ export function Hero({ content }: { content?: SectionContent }) {
   const primaryBtnLink = c.primaryBtnLink || "/products";
   const secondaryBtnText = c.secondaryBtnText || "Become a Distributor";
   const secondaryBtnLink = c.secondaryBtnLink || "/distributor";
-  const imageUrl = c.imageUrl || "/images/pack-compare.jpeg";
+  const productImage1 = c.productImage1 || "/images/pack-compare.jpeg";
+  const productImage2 = c.productImage2 || "/images/pack-compare.jpeg";
+  const backgroundImage = c.backgroundImage || "";
 
   return (
     <section className="relative px-5 sm:px-8 pt-12 sm:pt-16 pb-16 sm:pb-20 overflow-hidden">
+      {backgroundImage && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={backgroundImage} alt="" aria-hidden="true" className="absolute inset-0 w-full h-full object-cover opacity-10 pointer-events-none" />
+      )}
       <div className="pointer-events-none size-96 blur-3xl rounded-full bg-[#2b7fff]/15 absolute -right-24 top-10" />
       <div className="pointer-events-none size-72 bg-[oklch(0.62_0.19_47)]/15 blur-3xl rounded-full absolute -left-20 bottom-0" />
 
@@ -75,13 +81,13 @@ export function Hero({ content }: { content?: SectionContent }) {
           <div className="size-80 bg-gradient-to-br from-[#2b7fff]/25 to-neutral-800 rounded-full absolute inset-0 m-auto" />
           <div className="relative grid grid-cols-2 gap-4">
             {[
-              { label: "90g · ₹8", mt: "mt-8" },
-              { label: "1kg · ₹85", mt: "" },
+              { label: "90g · ₹8", mt: "mt-8", img: productImage1 },
+              { label: "1kg · ₹85", mt: "", img: productImage2 },
             ].map((p) => (
               <div key={p.label} className={`shadow-2xl shadow-black/40 rounded-3xl bg-neutral-900 border border-white/10 overflow-hidden ${p.mt}`}>
                 <div className="relative w-36 sm:w-44 h-56 sm:h-64">
                   <Image
-                    src={imageUrl}
+                    src={p.img}
                     alt={`Rinzoo ${p.label} pack`}
                     fill
                     sizes="(max-width: 640px) 144px, 176px"

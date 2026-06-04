@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth";
@@ -69,6 +70,7 @@ export async function PUT(request: Request, { params }: Params) {
       },
     });
 
+    revalidatePath("/", "layout");
     return NextResponse.json({ data: offer });
   } catch (err) {
     if (err instanceof z.ZodError) {
@@ -86,6 +88,7 @@ export async function DELETE(_req: Request, { params }: Params) {
 
     const { id } = await params;
     await db.offer.delete({ where: { id } });
+    revalidatePath("/", "layout");
     return NextResponse.json({ data: { deleted: true } });
   } catch (err) {
     console.error("[DELETE /api/v1/admin/offers/[id]]", err);

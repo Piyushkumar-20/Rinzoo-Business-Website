@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth";
@@ -58,6 +59,7 @@ export async function POST(request: Request) {
       },
     });
 
+    revalidatePath("/", "layout");
     return NextResponse.json({ data: product }, { status: 201 });
   } catch (err) {
     if (err instanceof z.ZodError) {

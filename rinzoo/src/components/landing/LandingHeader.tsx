@@ -27,7 +27,7 @@ const NAV_LINKS = [
 
 const ADMIN_ROLES = ["super_admin", "marketing_manager", "sales_manager", "content_manager"];
 
-export function LandingHeader() {
+export function LandingHeader({ logoUrl = "/images/logo.png" }: { logoUrl?: string }) {
   const { data: session, status } = useSession();
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -56,7 +56,7 @@ export function LandingHeader() {
         {/* Brand */}
         <Link href="/" className="flex items-center gap-2 shrink-0">
           <div className="size-10 shadow-sm rounded-xl bg-[#2b7fff] flex justify-center items-center overflow-hidden">
-            <Image src="/images/logo.png" alt="Rinzoo logo" width={40} height={40} className="object-cover w-full h-full" priority />
+            <Image src={logoUrl} alt="Rinzoo logo" width={40} height={40} className="object-cover w-full h-full" priority />
           </div>
           <div className="leading-none flex flex-col">
             <span className="font-extrabold text-[#5ea3ff] text-xl leading-7 tracking-tight">Rinzoo</span>

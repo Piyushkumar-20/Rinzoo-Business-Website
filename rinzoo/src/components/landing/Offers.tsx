@@ -3,6 +3,7 @@ import { Tag, Gift, Truck } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import type { SectionContent } from "@/lib/content-schema";
 
 export interface OfferCard {
   title: string;
@@ -32,17 +33,20 @@ const VARIANTS = [
 
 const ICONS = [Tag, Gift, Truck];
 
-export function Offers({ offers }: { offers: OfferCard[] }) {
+export function Offers({ offers, content }: { offers: OfferCard[]; content?: SectionContent }) {
   if (offers.length === 0) return null;
+  const c = (content ?? {}) as Record<string, string>;
+  const badge = c.badge || "Special Offers";
+  const heading = c.heading || "Limited-Time Savings";
 
   return (
     <section className="px-5 sm:px-8 py-16 sm:py-20">
       <div className="text-center flex mb-12 flex-col items-center gap-3">
         <Badge className="bg-[oklch(0.62_0.19_47)]/20 text-[oklch(0.78_0.16_47)] font-semibold rounded-full text-xs leading-4 px-3 py-1">
-          Special Offers
+          {badge}
         </Badge>
         <h2 className="font-extrabold text-neutral-50 text-3xl sm:text-4xl leading-tight tracking-tight">
-          Limited-Time Savings
+          {heading}
         </h2>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
