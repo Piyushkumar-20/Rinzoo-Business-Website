@@ -1,38 +1,33 @@
 # Rinzoo Website
 
-A modern corporate website developed for **Rinzoo Detergent Powder**. The project showcases the company's products, brand, and promotional content while providing an administrative dashboard to manage website data.
+A modern corporate website developed for **Rinzoo Detergent Powder**, featuring a responsive marketing website and an integrated admin dashboard for managing products, offers, and customer inquiries.
 
-## Highlights
+### Live Demo
 
-- Corporate landing page
+**https://reenzo.vercel.app**
+
+## Features
+
+- Modern corporate landing page
 - Product showcase
 - About & Contact pages
 - Distributor inquiry form
 - Promotional offers
 - Secure admin dashboard
-- Responsive UI
+- Responsive design
 - SEO-friendly architecture
 
 ## Tech Stack
 
-**Frontend**
 - Next.js
 - TypeScript
 - Tailwind CSS
 - shadcn/ui
 - Framer Motion
-
-**Backend**
-- Next.js API Routes
 - Prisma ORM
 - PostgreSQL
 - NextAuth/Auth.js
-- Zod
-
-## Project Status
-Completed and deployed as a full-stack business website with an integrated admin panel.
-reenzo.vercel.app
 
 ---
 
-Built by **Piyush**
+Developed by **Piyush**
